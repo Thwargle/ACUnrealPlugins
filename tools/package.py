@@ -37,6 +37,8 @@ def file_limit(key, official_id=None):
     if key in ("plugin.json", "default.json"):
         return 2 * 1024 * 1024
     directory, _, name = key.partition("/")
+    if directory == "data" and re.fullmatch(r"[A-Za-z0-9_-][A-Za-z0-9_. -]{0,90}\.(json|xml|txt)", name, re.I) and not RESERVED.match(name):
+        return 8 * 1024 * 1024
     extension = {"images": ".png", "sounds": ".wav"}.get(directory)
     if not extension or not ASSET.fullmatch(name) or RESERVED.match(name) or not name.lower().endswith(extension):
         raise ValueError(f"Unsupported package path: {key}")
@@ -72,6 +74,8 @@ def validate_bundle(data, expected_id, official=False):
             if plugin_id_from_manifest(manifest) != expected_id:
                 raise ValueError("Release manifest ID differs from the registration")
             version = manifest["version"].strip()
+        if key.startswith("data/"):
+            decoded.decode("utf-8")
         if key == "default.json" and not isinstance(json.loads(decoded, object_pairs_hook=unique_keys), dict):
             raise ValueError("Expected a JSON object in default.json")
     return version
@@ -94,6 +98,7 @@ def pack(folder, output, official=False):
             if not ASSET.fullmatch(path.name) or RESERVED.match(path.name) or path.suffix.lower() != extension:
                 raise ValueError(f"Unsupported asset: {path}")
             paths.append(path.relative_to(folder))
+    paths.extend(path.relative_to(folder) for path in sorted((folder / "data").glob("*")))
     files = {}
     seen = set()
     size = 0

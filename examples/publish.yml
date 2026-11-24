@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Thwargle/ACUnrealPlugins
-          ref: v1.0
+          ref: v1.1
           path: catalog-tools
           persist-credentials: false
       - name: Build release asset
