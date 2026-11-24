@@ -1,0 +1,5 @@
+<plugin id="looteditor" repo="Thwargle/ACE">
+  <name>Loot Profile Editor</name>
+  <developer>AC:Unreal</developer>
+  <description>Edit shared loot rules and review Virindi profile imports.</description>
+</plugin>

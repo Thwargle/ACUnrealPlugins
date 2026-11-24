@@ -1,0 +1,5 @@
+<plugin id="itemtools" repo="Thwargle/ACE">
+  <name>Item Tools</name>
+  <developer>AC:Unreal</developer>
+  <description>Give items in bulk, merge stacks, open keyed chests and restock at vendors.</description>
+</plugin>

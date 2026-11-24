@@ -1,0 +1,5 @@
+<plugin id="huntledger" repo="Thwargle/ACE">
+  <name>Hunt Ledger</name>
+  <developer>AC:Unreal</developer>
+  <description>Track XP and luminance gains, hourly rates and estimated time to level.</description>
+</plugin>

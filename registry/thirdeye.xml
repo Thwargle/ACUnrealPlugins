@@ -1,0 +1,5 @@
+<plugin id="thirdeye" repo="Thwargle/ACE">
+  <name>Third Eye</name>
+  <developer>AC:Unreal</developer>
+  <description>Watch nearby spawns by name, mark matches and receive chat or sound alerts.</description>
+</plugin>

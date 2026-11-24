@@ -1,0 +1,5 @@
+<plugin id="actiondeck" repo="Thwargle/ACE">
+  <name>Action Deck</name>
+  <developer>AC:Unreal</developer>
+  <description>Bind items, spells, attacks and chat macros to a movable bar with up to 48 slots.</description>
+</plugin>
