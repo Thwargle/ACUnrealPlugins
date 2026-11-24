@@ -1,5 +1,5 @@
 <plugin id="waypoint" repo="Thwargle/ACE">
   <name>Waypoint</name>
-  <developer>AC:Unreal</developer>
+  <developer>Thwargle</developer>
   <description>Search the included or imported atlas, plan portal routes and follow them on the minimap.</description>
 </plugin>

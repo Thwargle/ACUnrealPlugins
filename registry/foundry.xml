@@ -1,5 +1,5 @@
 <plugin id="foundry" repo="Thwargle/ACE">
   <name>Dereth Foundry</name>
-  <developer>AC:Unreal</developer>
+  <developer>Thwargle</developer>
   <description>Import, edit and place ACE world content with server administrator tools.</description>
 </plugin>

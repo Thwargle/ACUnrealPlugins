@@ -1,5 +1,5 @@
 <plugin id="ucm" repo="Thwargle/ACE">
   <name>Unattended Combat Manager</name>
-  <developer>AC:Unreal</developer>
+  <developer>Thwargle</developer>
   <description>Automate combat, recovery, buffs, crafting, fellowship, routes and looting.</description>
 </plugin>

@@ -1,5 +1,5 @@
 <plugin id="supplyledger" repo="Thwargle/ACE">
   <name>Supply Ledger</name>
-  <developer>AC:Unreal</developer>
+  <developer>Thwargle</developer>
   <description>Pin a counter for selected items across your packs.</description>
 </plugin>

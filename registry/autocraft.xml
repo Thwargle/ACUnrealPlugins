@@ -1,5 +1,5 @@
 <plugin id="autocraft" repo="Thwargle/ACE">
   <name>Auto Craft</name>
-  <developer>AC:Unreal</developer>
+  <developer>Thwargle</developer>
   <description>Find recipes and craft a chosen quantity with ingredients from your packs.</description>
 </plugin>
