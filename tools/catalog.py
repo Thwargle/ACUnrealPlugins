@@ -1,6 +1,7 @@
 """Build the public index from registrations and stable GitHub release assets."""
 import argparse
 import base64
+import hashlib
 import json
 import os
 import re
@@ -10,7 +11,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-from package import ID, LIMIT, RESERVED
+from package import ID, LIMIT, RESERVED, validate_bundle
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = re.compile(r"[A-Za-z0-9_-][A-Za-z0-9_.-]{0,99}/[A-Za-z0-9_-][A-Za-z0-9_.-]{0,99}")
@@ -39,7 +40,7 @@ def listing(path):
     return result, repo
 
 
-def release(result, repo):
+def release(result, repo, previous):
     # Only send the Actions token to the fixed GitHub API origin.
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "ACUnrealPlugins"}
     if os.environ.get("GITHUB_TOKEN"):
@@ -57,6 +58,12 @@ def release(result, repo):
     digest = asset.get("digest") or ""
     if not re.fullmatch(r"sha256:[a-f0-9]{64}", digest):
         raise ValueError(f"No GitHub SHA-256 digest for {filename}")
+    if previous is None or previous.get("sha256") != digest[7:]:
+        with urlopen(Request(link, headers={"User-Agent": "ACUnrealPlugins"}), timeout=30) as response:
+            data = response.read(asset["size"] + 1)
+        if len(data) != asset["size"] or hashlib.sha256(data).hexdigest() != digest[7:]:
+            raise ValueError(f"Release asset failed integrity verification: {filename}")
+        validate_bundle(data, result.get("id"))
     ET.SubElement(result, "release", tag=tag, download=link, sha256=digest[7:], bytes=str(asset["size"]))
 
 
@@ -66,10 +73,11 @@ def build(strict=False):
     catalog = ET.Element("catalog", schema="1")
     for path in sorted((ROOT / "registry").glob("*.xml")):
         entry, repo = listing(path)
+        previous = old.get(entry.get("id"))
         try:
-            release(entry, repo)
+            known = previous.find("release") if previous is not None and previous.get("repository") == entry.get("repository") and not strict else None
+            release(entry, repo, known)
         except Exception as error:
-            previous = old.get(entry.get("id"))
             if strict or previous is None or previous.get("repository") != entry.get("repository") or previous.find("release") is None:
                 raise
             print(f"{repo}: keeping previous release ({error})", file=sys.stderr)

@@ -5,7 +5,7 @@ Players can open **Plugin Manager** on the AC:Unreal account screen, browse rele
 ## Register a plugin
 
 1. Publish your API 1 or 2 Lua plugin in a public GitHub repository. Give it a stable lowercase ID in `plugin.json`. Keep the manifest, `main.lua`, optional `default.json`, `images/*.png` and `sounds/*.wav` together.
-2. Run `python tools/package.py PATH_TO_PLUGIN --output dist` with Python 3.10 or later. Upload `dist/YOUR_ID.acplugin` as an asset of a published stable GitHub release. The release tag appears in the client. Use an ordinary tag such as `v1.2.0`.
+2. Copy [the release workflow](examples/publish.yml) to `.github/workflows/publish.yml` in your repo. If your manifest lives in a subfolder, change `plugin-source` in the build command to its path. Publish a stable GitHub release such as `v1.2.0` and the workflow attaches `YOUR_ID.acplugin`. To package manually, run `python tools/package.py PATH_TO_PLUGIN --output dist` with Python 3.10 or later and upload the resulting file to your release.
 3. Open a pull request adding `registry/YOUR_ID.xml`. Use [the Graphics Gallery entry](registry/graphics_gallery.xml) as a template. Enter your repository as `owner/repository`. An optional PNG logo lives beside the registration with the same ID, up to 256 × 256 pixels and 64 KiB. Omit the logo element to use the client's default icon.
 4. A maintainer reviews the initial registration. For later versions, publish a new stable release in **your own repo** with the same asset filename. The hourly workflow updates the download link and checksum. Players choose when to update. No catalog pull request is needed for ordinary releases.
 
