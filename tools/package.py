@@ -17,8 +17,8 @@ def plugin_id_from_manifest(manifest):
         raise ValueError("Expected a portable lowercase plugin ID and API 1 or 2")
     if manifest.get("mode", "") not in ("", "automation", "companion") or not isinstance(manifest.get("permissions"), list):
         raise ValueError("Expected a Lua automation or companion manifest with a permissions list")
-    if not isinstance(manifest.get("version"), str) or not manifest["version"].strip():
-        raise ValueError("Set the plugin version in plugin.json")
+    if not isinstance(manifest.get("version"), str) or not 0 < len(manifest["version"].strip()) <= 96:
+        raise ValueError("Set a plugin version of 1 to 96 characters in plugin.json")
     return plugin_id
 
 
@@ -55,10 +55,14 @@ def validate_bundle(data, expected_id):
         decoded = base64.b64decode(value, validate=True)
         if not 0 < len(decoded) <= limit:
             raise ValueError(f"Unsupported file size: {key}")
-        if key == "plugin.json" and plugin_id_from_manifest(json.loads(decoded, object_pairs_hook=unique_keys)) != expected_id:
-            raise ValueError("Release manifest ID differs from the registration")
+        if key == "plugin.json":
+            manifest = json.loads(decoded, object_pairs_hook=unique_keys)
+            if plugin_id_from_manifest(manifest) != expected_id:
+                raise ValueError("Release manifest ID differs from the registration")
+            version = manifest["version"].strip()
         if key == "default.json" and not isinstance(json.loads(decoded, object_pairs_hook=unique_keys), dict):
             raise ValueError("Expected a JSON object in default.json")
+    return version
 
 
 def pack(folder, output):

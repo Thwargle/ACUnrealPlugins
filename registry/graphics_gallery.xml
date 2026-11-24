@@ -1,5 +1,6 @@
 <plugin id="graphics_gallery" repo="Thwargle/ACUnrealPlugins">
   <name>Graphics Gallery</name>
+  <developer>Thwargle</developer>
   <description>Explore local PNG artwork, native effects and layered gauges in a small companion plugin.</description>
   <logo>graphics_gallery.png</logo>
 </plugin>

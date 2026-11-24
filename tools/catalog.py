@@ -24,7 +24,7 @@ def listing(path):
     if source.tag != "plugin" or pid != path.stem or not ID.fullmatch(pid) or RESERVED.match(pid) or not REPO.fullmatch(repo):
         raise ValueError(f"Invalid ID or GitHub repository: {path}")
     result = ET.Element("plugin", id=pid, repository=f"https://github.com/{repo}")
-    for key, limit in (("name", 80), ("description", 600)):
+    for key, limit in (("name", 80), ("developer", 80), ("description", 600)):
         value = (source.findtext(key) or "").strip()
         if not 0 < len(value) <= limit:
             raise ValueError(f"Invalid {key} for {pid}")
@@ -58,13 +58,14 @@ def release(result, repo, previous):
     digest = asset.get("digest") or ""
     if not re.fullmatch(r"sha256:[a-f0-9]{64}", digest):
         raise ValueError(f"No GitHub SHA-256 digest for {filename}")
-    if previous is None or previous.get("sha256") != digest[7:]:
+    version = previous.get("version") if previous is not None and previous.get("sha256") == digest[7:] else None
+    if not version:
         with urlopen(Request(link, headers={"User-Agent": "ACUnrealPlugins"}), timeout=30) as response:
             data = response.read(asset["size"] + 1)
         if len(data) != asset["size"] or hashlib.sha256(data).hexdigest() != digest[7:]:
             raise ValueError(f"Release asset failed integrity verification: {filename}")
-        validate_bundle(data, result.get("id"))
-    ET.SubElement(result, "release", tag=tag, download=link, sha256=digest[7:], bytes=str(asset["size"]))
+        version = validate_bundle(data, result.get("id"))
+    ET.SubElement(result, "release", tag=tag, version=version, download=link, sha256=digest[7:], bytes=str(asset["size"]))
 
 
 def build(strict=False):
