@@ -9,6 +9,13 @@ ID = re.compile(r"[a-z][a-z0-9_-]{0,63}")
 ASSET = re.compile(r"[A-Za-z0-9_-][A-Za-z0-9_. -]{0,90}\.(png|wav)", re.I)
 RESERVED = re.compile(r"(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)", re.I)
 LIMIT = 16 * 1024 * 1024
+NATIVE = {"actiondeck", "autocraft", "huntledger", "looteditor", "supplyledger", "ucmmicro", "waypoint"}
+OFFICIAL_DATA = {
+    "autocraft": ("catalog.json", "LICENSE", "NOTICE.txt"),
+    "ucm": ("monster-elements.json",),
+    "thirdeye": ("sounds/README.txt",),
+    "waypoint": ("locations.xml", "MapRegions.xml", "LICENSE_GOARROW.txt"),
+}
 
 
 def plugin_id_from_manifest(manifest):
@@ -22,7 +29,9 @@ def plugin_id_from_manifest(manifest):
     return plugin_id
 
 
-def file_limit(key):
+def file_limit(key, official_id=None):
+    if key in OFFICIAL_DATA.get(official_id, ()):
+        return 8 * 1024 * 1024 if key == "catalog.json" else 2 * 1024 * 1024
     if key == "main.lua":
         return 256 * 1024
     if key in ("plugin.json", "default.json"):
@@ -34,7 +43,7 @@ def file_limit(key):
     return 1024 * 1024 if directory == "sounds" else 2 * 1024 * 1024
 
 
-def validate_bundle(data, expected_id):
+def validate_bundle(data, expected_id, official=False):
     if not 0 < len(data) <= LIMIT:
         raise ValueError("Package exceeds 16 MiB or is empty")
     def unique_keys(pairs):
@@ -44,12 +53,15 @@ def validate_bundle(data, expected_id):
         return result
     bundle = json.loads(data, object_pairs_hook=unique_keys)
     files = bundle["files"]
-    if type(bundle["format"]) is not int or bundle["format"] != 1 or not isinstance(files, dict) or not 2 <= len(files) <= 128:
+    if type(bundle["format"]) is not int or bundle["format"] != 1 or not isinstance(files, dict) or not 1 <= len(files) <= 128:
         raise ValueError("Invalid plugin package format")
-    if not {"main.lua", "plugin.json"}.issubset(files) or len({key.lower() for key in files}) != len(files):
+    required = {"plugin.json", *OFFICIAL_DATA.get(expected_id, ())} if official else {"plugin.json"}
+    if not official or expected_id not in NATIVE:
+        required.add("main.lua")
+    if not required.issubset(files) or len({key.lower() for key in files}) != len(files):
         raise ValueError("Missing required files or duplicate filenames")
     for key, value in files.items():
-        limit = file_limit(key)
+        limit = file_limit(key, expected_id if official else None)
         if not isinstance(value, str) or len(value) > ((limit+2)//3)*4:
             raise ValueError(f"Invalid encoded file: {key}")
         decoded = base64.b64decode(value, validate=True)
@@ -65,14 +77,20 @@ def validate_bundle(data, expected_id):
     return version
 
 
-def pack(folder, output):
+def pack(folder, output, official=False):
     manifest = json.loads((folder / "plugin.json").read_text(encoding="utf-8-sig"))
     plugin_id = plugin_id_from_manifest(manifest)
-    paths = [Path("plugin.json"), Path("main.lua")]
+    paths = [Path("plugin.json")]
+    if not official or plugin_id not in NATIVE or (folder / "main.lua").exists():
+        paths.append(Path("main.lua"))
+    extras = OFFICIAL_DATA.get(plugin_id, ()) if official else ()
+    paths.extend(map(Path, extras))
     if (folder / "default.json").is_file():
         paths.append(Path("default.json"))
     for directory, extension in (("images", ".png"), ("sounds", ".wav")):
         for path in sorted((folder / directory).glob("*")):
+            if path.relative_to(folder).as_posix() in extras:
+                continue
             if not ASSET.fullmatch(path.name) or RESERVED.match(path.name) or path.suffix.lower() != extension:
                 raise ValueError(f"Unsupported asset: {path}")
             paths.append(path.relative_to(folder))
@@ -85,7 +103,7 @@ def pack(folder, output):
         if source.is_symlink() or not source.resolve().is_relative_to(folder.resolve()) or key.lower() in seen:
             raise ValueError(f"Invalid or duplicate asset: {key}")
         seen.add(key.lower())
-        limit = file_limit(key)
+        limit = file_limit(key, plugin_id if official else None)
         if not 0 < source.stat().st_size <= limit:
             raise ValueError(f"Unsupported file size: {key}")
         files[key] = base64.b64encode(source.read_bytes()).decode("ascii")
@@ -93,7 +111,7 @@ def pack(folder, output):
         if size > LIMIT or len(files) > 128:
             raise ValueError("Package exceeds 16 MiB or 128 files")
     data = json.dumps({"format": 1, "files": files}, separators=(",", ":")).encode()
-    validate_bundle(data, plugin_id)
+    validate_bundle(data, plugin_id, official)
     output.mkdir(parents=True, exist_ok=True)
     result = output / f"{plugin_id}.acplugin"
     result.write_bytes(data)
@@ -104,6 +122,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("folder", type=Path)
     parser.add_argument("--output", type=Path, default=Path("dist"))
+    parser.add_argument("--official", action="store_true", help="Package AC:Unreal's native panels and official data")
     args = parser.parse_args()
-    print(pack(args.folder, args.output))
+    print(pack(args.folder, args.output, args.official))
 

@@ -9,6 +9,7 @@ import struct
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from functools import lru_cache
 from urllib.request import Request, urlopen
 
 from package import ID, LIMIT, RESERVED, validate_bundle
@@ -40,13 +41,32 @@ def listing(path):
     return result, repo
 
 
-def release(result, repo, previous):
+@lru_cache(maxsize=None)
+def release_info(repo):
     # Only send the Actions token to the fixed GitHub API origin.
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "ACUnrealPlugins"}
     if os.environ.get("GITHUB_TOKEN"):
         headers["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
-    with urlopen(Request(f"https://api.github.com/repos/{repo}/releases/latest", headers=headers), timeout=20) as response:
-        info = json.load(response)
+    base = f"https://api.github.com/repos/{repo}"
+    if repo == "Thwargle/ACE":
+        # Game releases and official plugin releases have independent lifecycles.
+        # Select the latest published plugin tag, even if a newer source build is still running.
+        page = 1
+        while True:
+            with urlopen(Request(f"{base}/releases?per_page=100&page={page}", headers=headers), timeout=20) as response:
+                releases = json.load(response)
+            for item in releases:
+                if not item["draft"] and not item["prerelease"] and re.fullmatch(r"plugins-[a-f0-9]{40}", item["tag_name"]):
+                    return item
+            if len(releases) < 100:
+                raise ValueError("No published official plugin release")
+            page += 1
+    with urlopen(Request(f"{base}/releases/latest", headers=headers), timeout=20) as response:
+        return json.load(response)
+
+
+def release(result, repo, previous):
+    info = release_info(repo)
     tag = info["tag_name"]
     if info["prerelease"] or info["draft"] or not TAG.fullmatch(tag):
         raise ValueError("Expected a stable release with a portable tag")
@@ -64,7 +84,7 @@ def release(result, repo, previous):
             data = response.read(asset["size"] + 1)
         if len(data) != asset["size"] or hashlib.sha256(data).hexdigest() != digest[7:]:
             raise ValueError(f"Release asset failed integrity verification: {filename}")
-        version = validate_bundle(data, result.get("id"))
+        version = validate_bundle(data, result.get("id"), official=repo == "Thwargle/ACE")
     ET.SubElement(result, "release", tag=tag, version=version, download=link, sha256=digest[7:], bytes=str(asset["size"]))
 
 
