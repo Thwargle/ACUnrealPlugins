@@ -73,6 +73,8 @@ def validate_bundle(data, expected_id, official=False):
             manifest = json.loads(decoded, object_pairs_hook=unique_keys)
             if plugin_id_from_manifest(manifest) != expected_id:
                 raise ValueError("Release manifest ID differs from the registration")
+            if manifest["api"] == 2 and "main.lua" not in files:
+                raise ValueError("API 2 plugins require main.lua")
             version = manifest["version"].strip()
         if key.startswith("data/"):
             decoded.decode("utf-8")
