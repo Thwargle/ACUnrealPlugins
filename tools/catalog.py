@@ -52,14 +52,18 @@ def release_info(repo):
         # Game releases and official plugin releases have independent lifecycles.
         # Select the latest published plugin tag, even if a newer source build is still running.
         page = 1
+        latest = None
         while True:
             with urlopen(Request(f"{base}/releases?per_page=100&page={page}", headers=headers), timeout=20) as response:
                 releases = json.load(response)
             for item in releases:
                 if not item["draft"] and not item["prerelease"] and re.fullmatch(r"plugins-[a-f0-9]{40}", item["tag_name"]):
-                    return item
+                    if latest is None or item["published_at"] > latest["published_at"]:
+                        latest = item
             if len(releases) < 100:
-                raise ValueError("No published official plugin release")
+                if latest is None:
+                    raise ValueError("No published official plugin release")
+                return latest
             page += 1
     with urlopen(Request(f"{base}/releases/latest", headers=headers), timeout=20) as response:
         return json.load(response)

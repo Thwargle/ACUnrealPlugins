@@ -1,5 +1,5 @@
 <plugin id="ucmmicro" repo="Thwargle/ACE">
   <name>UCM Micro</name>
   <developer>AC:Unreal</developer>
-  <description>Control the active UCM profile from a compact panel.</description>
+  <description>Run combat and recovery from a compact panel, or control the full UCM profile when installed and enabled.</description>
 </plugin>
