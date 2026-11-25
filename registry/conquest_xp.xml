@@ -1,0 +1,6 @@
+<plugin id="conquest_xp" repo="gvbz/ConquestXP">
+  <name>Conquest XP</name>
+  <developer>gvbz</developer>
+  <description>Show XP and luminance rates on the Conquest server, with automatic bank deposits and currency totals.</description>
+  <logo>conquest_xp.png</logo>
+</plugin>

@@ -1,0 +1,6 @@
+<plugin id="kt_tracker" repo="gvbz/KT_Tracker">
+  <name>Kill Task Tracker</name>
+  <developer>gvbz</developer>
+  <description>Track kill tasks by area with progress, quest giver markers and a navigation arrow to the nearest task monster.</description>
+  <logo>kt_tracker.png</logo>
+</plugin>

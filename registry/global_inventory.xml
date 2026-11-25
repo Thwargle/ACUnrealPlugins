@@ -1,0 +1,6 @@
+<plugin id="global_inventory" repo="gvbz/Global_Inventory">
+  <name>Global Inventory</name>
+  <developer>gvbz</developer>
+  <description>Save the items of every character on a server and search them with Oracle of Dereth categories, filters and columns. Imports Virindi Global Inventory databases with VGI_Import.html from the release.</description>
+  <logo>global_inventory.png</logo>
+</plugin>

@@ -1,0 +1,6 @@
+<plugin id="chat_filters" repo="gvbz/Chat_Filters">
+  <name>Chat Filters</name>
+  <developer>gvbz</developer>
+  <description>Hide chat lines by category and play an alert when chat contains chosen text.</description>
+  <logo>chat_filters.png</logo>
+</plugin>

@@ -1,0 +1,6 @@
+<plugin id="boss_frames" repo="gvbz/Boss_Frames">
+  <name>Boss Frames</name>
+  <developer>gvbz</developer>
+  <description>Show a plate with name, level, health and debuffs on chosen bosses, with optional chat alerts and minimap markers.</description>
+  <logo>boss_frames.png</logo>
+</plugin>
