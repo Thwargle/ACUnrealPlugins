@@ -2,4 +2,5 @@
   <name>Third Eye</name>
   <developer>Thwargle</developer>
   <description>Watch nearby spawns by name, mark matches and receive chat or sound alerts.</description>
+  <logo>thirdeye.png</logo>
 </plugin>

@@ -2,4 +2,5 @@
   <name>Unattended Combat Manager</name>
   <developer>Thwargle</developer>
   <description>Automate combat, recovery, buffs, crafting, fellowship, routes and looting.</description>
+  <logo>ucm.png</logo>
 </plugin>

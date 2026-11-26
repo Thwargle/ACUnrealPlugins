@@ -2,4 +2,5 @@
   <name>Waypoint</name>
   <developer>Thwargle</developer>
   <description>Search the included or imported atlas, plan portal routes and follow them on the minimap.</description>
+  <logo>waypoint.png</logo>
 </plugin>

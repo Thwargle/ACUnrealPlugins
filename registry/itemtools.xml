@@ -2,4 +2,5 @@
   <name>Item Tools</name>
   <developer>Thwargle</developer>
   <description>Give items in bulk, merge stacks, open keyed chests and restock at vendors.</description>
+  <logo>itemtools.png</logo>
 </plugin>

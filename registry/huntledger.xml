@@ -2,4 +2,5 @@
   <name>Hunt Ledger</name>
   <developer>Thwargle</developer>
   <description>Track XP and luminance gains, hourly rates and estimated time to level.</description>
+  <logo>huntledger.png</logo>
 </plugin>

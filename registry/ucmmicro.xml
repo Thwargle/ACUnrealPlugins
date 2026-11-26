@@ -2,4 +2,5 @@
   <name>UCM Micro</name>
   <developer>Thwargle</developer>
   <description>Run combat and recovery from a compact panel, or control the full UCM profile when installed and enabled.</description>
+  <logo>ucmmicro.png</logo>
 </plugin>

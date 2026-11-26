@@ -2,4 +2,5 @@
   <name>Loot Profile Editor</name>
   <developer>Thwargle</developer>
   <description>Edit shared loot rules and review Virindi profile imports.</description>
+  <logo>looteditor.png</logo>
 </plugin>

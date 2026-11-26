@@ -2,4 +2,5 @@
   <name>Supply Ledger</name>
   <developer>Thwargle</developer>
   <description>Pin a counter for selected items across your packs.</description>
+  <logo>supplyledger.png</logo>
 </plugin>

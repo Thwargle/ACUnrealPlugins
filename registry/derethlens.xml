@@ -2,4 +2,5 @@
   <name>Dereth Lens</name>
   <developer>Thwargle</developer>
   <description>Highlight impassable terrain, show radar range and brighten dungeons.</description>
+  <logo>derethlens.png</logo>
 </plugin>

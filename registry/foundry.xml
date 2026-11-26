@@ -2,4 +2,5 @@
   <name>Dereth Foundry</name>
   <developer>Thwargle</developer>
   <description>Import, edit and place ACE world content with server administrator tools.</description>
+  <logo>foundry.png</logo>
 </plugin>

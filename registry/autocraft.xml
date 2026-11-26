@@ -2,4 +2,5 @@
   <name>Auto Craft</name>
   <developer>Thwargle</developer>
   <description>Find recipes and craft a chosen quantity with ingredients from your packs.</description>
+  <logo>autocraft.png</logo>
 </plugin>

@@ -2,4 +2,5 @@
   <name>Action Deck</name>
   <developer>Thwargle</developer>
   <description>Bind items, spells, attacks and chat macros to a movable bar with up to 48 slots.</description>
+  <logo>actiondeck.png</logo>
 </plugin>
